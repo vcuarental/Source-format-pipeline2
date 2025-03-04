@@ -1,26 +1,39 @@
 public class AccountOperations {
-    /**
-     * Sets a default description for accounts if none exists
-     * @param accounts List of accounts to process
-     * @return List<Account> Processed accounts with default descriptions
-     */
-    public static List<Account> setDefaultDescription(List<Account> accounts) {
-        // Exit if no accounts to process
-        if (accounts == null || accounts.isEmpty()) {
-            return accounts;
+    
+    public static Account setDefaultDescription(Account acc) {
+        if(acc.Description == null || acc.Description.trim().length() == 0) {
+            acc.Description = 'Default description';
+        }
+        return acc;
+    }
+    
+    public static Account setDefaultPhone(Account acc) {
+        if(acc.Phone == null || acc.Phone.trim().length() == 0) {
+            acc.Phone = '1234567890';
+        }
+        return acc;
+    }
+    
+    public static Account setDefaultURL(Account acc) {
+        if(acc.Website == null || acc.Website.trim().length() == 0) {
+            acc.Website = 'www.mydefaultsite.com';
+        }
+        return acc;
+    }
+    
+    public static List<Account> setDefaultValues(List<Account> accList) {
+        if(accList == null || accList.isEmpty()) {
+            return new List<Account>();
         }
         
-        List<Account> accountsToUpdate = new List<Account>();
-        
-        // Process accounts in bulk
-        for (Account acc : accounts) {
-            // Only set description if it's null
-            if (acc.Description == null) {
-                acc.Description = 'Default Description';
-                accountsToUpdate.add(acc);
-            }
+        List<Account> updatedAccounts = new List<Account>();
+        for(Account acc : accList) {
+            Account updatedAcc = acc;
+            updatedAcc = setDefaultDescription(updatedAcc);
+            updatedAcc = setDefaultPhone(updatedAcc);
+            updatedAcc = setDefaultURL(updatedAcc);
+            updatedAccounts.add(updatedAcc);
         }
-        
-        return accountsToUpdate;
+        return updatedAccounts;
     }
 }
