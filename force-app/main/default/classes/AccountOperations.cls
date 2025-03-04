@@ -1,126 +1,39 @@
-/**
- * @description Class to handle Account-related operations
- * @author BuildAgent
- * @date 2025-03-04
- */
 public class AccountOperations {
-    // Constants for reusability and maintenance
-    private static final String DEFAULT_DESCRIPTION = 'Default Description';
-    private static final String DEFAULT_RATING = 'Warm';
-    private static final Integer MAX_BATCH_SIZE = 10000;
-
-    /**
-     * Sets a default description for accounts if none exists
-     * @param accounts List of accounts to process
-     * @return List<Account> Processed accounts with default descriptions
-     */
-    public static List<Account> setDefaultDescription(List<Account> accounts) {
-        // Exit if no accounts to process
-        if (accounts == null || accounts.isEmpty()) {
-            return accounts;
+    
+    public static Account setDefaultDescription(Account acc) {
+        if(acc.Description == null || acc.Description.trim().length() == 0) {
+            acc.Description = 'Default description';
         }
-        //comment
-        
-        List<Account> accountsToUpdate = new List<Account>();
-        
-        // Process accounts in bulk
-        for (Account acc : accounts) {
-            // Only set description if it's null
-            if (acc.Description == null) {
-                acc.Description = DEFAULT_DESCRIPTION;
-                accountsToUpdate.add(acc);
-            }
-        }
-        
-        return accountsToUpdate;
+        return acc;
     }
-
-    /**
-     * Updates account rating based on annual revenue
-     * @param accounts List of accounts to process
-     * @return List<Account> Processed accounts with updated ratings
-     */
-    public static List<Account> updateAccountRating(List<Account> accounts) {
-        if (accounts == null || accounts.isEmpty()) {
-            return accounts;
+    
+    public static Account setDefaultPhone(Account acc) {
+        if(acc.Phone == null || acc.Phone.trim().length() == 0) {
+            acc.Phone = '1234567890';
         }
-
-        List<Account> accountsToUpdate = new List<Account>();
-        
-        for (Account acc : accounts) {
-            if (acc.AnnualRevenue != null) {
-                // Set rating based on revenue
-                if (acc.AnnualRevenue > 1000000) {
-                    acc.Rating = 'Hot';
-                } else if (acc.AnnualRevenue > 500000) {
-                    acc.Rating = 'Warm';
-                } else {
-                    acc.Rating = 'Cold';
-                }
-                accountsToUpdate.add(acc);
-            }
-        }
-        
-        return accountsToUpdate;
+        return acc;
     }
-
-    /**
-     * Calculates the total revenue for a list of accounts
-     * @param accounts List of accounts to process
-     * @return Decimal Total revenue of all accounts
-     */
-    public static Decimal calculateTotalRevenue(List<Account> accounts) {
-        if (accounts == null || accounts.isEmpty()) {
-            return 0;
+    
+    public static Account setDefaultURL(Account acc) {
+        if(acc.Website == null || acc.Website.trim().length() == 0) {
+            acc.Website = 'www.mydefaultsite.com';
         }
-
-        Decimal totalRevenue = 0;
-        
-        for (Account acc : accounts) {
-            if (acc.AnnualRevenue != null) {
-                totalRevenue += acc.AnnualRevenue;
-            }
+        return acc;
+    }
+    
+    public static List<Account> setDefaultValues(List<Account> accList) {
+        if(accList == null || accList.isEmpty()) {
+            return new List<Account>();
         }
         
-        return totalRevenue;
+        List<Account> updatedAccounts = new List<Account>();
+        for(Account acc : accList) {
+            Account updatedAcc = acc;
+            updatedAcc = setDefaultDescription(updatedAcc);
+            updatedAcc = setDefaultPhone(updatedAcc);
+            updatedAcc = setDefaultURL(updatedAcc);
+            updatedAccounts.add(updatedAcc);
+        }
+        return updatedAccounts;
     }
-
-    /**
-     * Updates accounts in bulk with error handling
-     * @param accountsToUpdate List of accounts to update
-     * @return Database.SaveResult[] Results of the DML operation
-     */
-    public static Database.SaveResult[] updateAccounts(List<Account> accountsToUpdate) {
-        if (accountsToUpdate == null || accountsToUpdate.isEmpty()) {
-            return null;
-        }
-
-        // Ensure we don't exceed governor limits
-        if (accountsToUpdate.size() > MAX_BATCH_SIZE) {
-            throw new AccountOperationsException('Batch size exceeds maximum limit of ' + MAX_BATCH_SIZE);
-        }
-
-        try {
-            Database.SaveResult[] results = Database.update(accountsToUpdate, false);
-            
-            // Log errors if any
-            for (Database.SaveResult sr : results) {
-                if (!sr.isSuccess()) {
-                    for (Database.Error err : sr.getErrors()) {
-                        System.debug(LoggingLevel.ERROR, 'Error updating account: ' + err.getMessage());
-                    }
-                }
-            }
-            
-            return results;
-        } catch (Exception e) {
-            System.debug(LoggingLevel.ERROR, 'Error in updateAccounts: ' + e.getMessage());
-            throw new AccountOperationsException('Failed to update accounts: ' + e.getMessage());
-        }
-    }
-
-    /**
-     * Custom exception class for Account Operations
-     */
-    public class AccountOperationsException extends Exception {}
 }

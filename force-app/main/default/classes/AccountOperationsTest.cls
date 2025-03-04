@@ -1,205 +1,96 @@
-/**
- * @description Test class for AccountOperations
- * @author BuildAgent
- * @date 2025-03-04
- */
-@isTest
+@IsTest
 private class AccountOperationsTest {
-    // Constants for test data
-    private static final Decimal HIGH_REVENUE = 2000000;
-    private static final Decimal MEDIUM_REVENUE = 750000;
-    private static final Decimal LOW_REVENUE = 250000;
     
-    /**
-     * @description Sets up test data
-     * @return List<Account> List of test accounts
-     */
-    private static List<Account> createTestAccounts() {
-        List<Account> testAccounts = new List<Account>();
-        
-        // Account with no description
-        testAccounts.add(new Account(
-            Name = 'Test Account 1',
-            AnnualRevenue = HIGH_REVENUE
-        ));
-        
-        // Account with existing description
-        testAccounts.add(new Account(
-            Name = 'Test Account 2',
-            Description = 'Existing Description',
-            AnnualRevenue = MEDIUM_REVENUE
-        ));
-        
-        // Account with no revenue
-        testAccounts.add(new Account(
-            Name = 'Test Account 3',
-            Description = null,
-            AnnualRevenue = null
-        ));
-        
-        return testAccounts;
-    }
-    
-    /**
-     * @description Tests setDefaultDescription method with null input
-     */
-    @isTest
-    static void testSetDefaultDescriptionNull() {
-        // Test null input
-        List<Account> result = AccountOperations.setDefaultDescription(null);
-        System.assertEquals(null, result, 'Null input should return null');
-        
-        // Test empty list
-        result = AccountOperations.setDefaultDescription(new List<Account>());
-        System.assertEquals(0, result.size(), 'Empty list should return empty list');
-    }
-    
-    /**
-     * @description Tests setDefaultDescription method with valid accounts
-     */
-    @isTest
+    @IsTest
     static void testSetDefaultDescription() {
-        // Arrange
-        List<Account> testAccounts = createTestAccounts();
+        // Test with null description
+        Account acc1 = new Account(Name = 'Test1');
+        Account result1 = AccountOperations.setDefaultDescription(acc1);
+        System.assertEquals('Default description', result1.Description, 'Default description should be set for null description');
         
-        // Act
-        Test.startTest();
-        List<Account> updatedAccounts = AccountOperations.setDefaultDescription(testAccounts);
-        Test.stopTest();
+        // Test with empty description
+        Account acc2 = new Account(Name = 'Test2', Description = '  ');
+        Account result2 = AccountOperations.setDefaultDescription(acc2);
+        System.assertEquals('Default description', result2.Description, 'Default description should be set for empty description');
         
-        // Assert
-        System.assertEquals(2, updatedAccounts.size(), 'Should return accounts needing updates');
-        for(Account acc : updatedAccounts) {
-            System.assertEquals('Default Description', acc.Description, 
-                'Account should have default description');
-        }
+        // Test with existing description
+        Account acc3 = new Account(Name = 'Test3', Description = 'Existing Description');
+        Account result3 = AccountOperations.setDefaultDescription(acc3);
+        System.assertEquals('Existing Description', result3.Description, 'Existing description should not be changed');
     }
     
-    /**
-     * @description Tests updateAccountRating method
-     */
-    @isTest
-    static void testUpdateAccountRating() {
-        // Arrange
-        List<Account> testAccounts = createTestAccounts();
+    @IsTest
+    static void testSetDefaultPhone() {
+        // Test with null phone
+        Account acc1 = new Account(Name = 'Test1');
+        Account result1 = AccountOperations.setDefaultPhone(acc1);
+        System.assertEquals('1234567890', result1.Phone, 'Default phone should be set for null phone');
         
-        // Act
-        Test.startTest();
-        List<Account> updatedAccounts = AccountOperations.updateAccountRating(testAccounts);
-        Test.stopTest();
+        // Test with empty phone
+        Account acc2 = new Account(Name = 'Test2', Phone = '  ');
+        Account result2 = AccountOperations.setDefaultPhone(acc2);
+        System.assertEquals('1234567890', result2.Phone, 'Default phone should be set for empty phone');
         
-        // Assert
-        System.assertEquals(2, updatedAccounts.size(), 'Should return accounts with revenue');
-        
-        for(Account acc : updatedAccounts) {
-            if(acc.AnnualRevenue == HIGH_REVENUE) {
-                System.assertEquals('Hot', acc.Rating, 'High revenue account should be rated Hot');
-            } else if(acc.AnnualRevenue == MEDIUM_REVENUE) {
-                System.assertEquals('Warm', acc.Rating, 'Medium revenue account should be rated Warm');
-            }
-        }
+        // Test with existing phone
+        Account acc3 = new Account(Name = 'Test3', Phone = '9876543210');
+        Account result3 = AccountOperations.setDefaultPhone(acc3);
+        System.assertEquals('9876543210', result3.Phone, 'Existing phone should not be changed');
     }
     
-    /**
-     * @description Tests calculateTotalRevenue method
-     */
-    @isTest
-    static void testCalculateTotalRevenue() {
-        // Arrange
-        List<Account> testAccounts = createTestAccounts();
-        Decimal expectedTotal = HIGH_REVENUE + MEDIUM_REVENUE; // Only accounts with revenue
+    @IsTest
+    static void testSetDefaultURL() {
+        // Test with null website
+        Account acc1 = new Account(Name = 'Test1');
+        Account result1 = AccountOperations.setDefaultURL(acc1);
+        System.assertEquals('www.mydefaultsite.com', result1.Website, 'Default website should be set for null website');
         
-        // Act
-        Test.startTest();
-        Decimal totalRevenue = AccountOperations.calculateTotalRevenue(testAccounts);
-        Test.stopTest();
+        // Test with empty website
+        Account acc2 = new Account(Name = 'Test2', Website = '  ');
+        Account result2 = AccountOperations.setDefaultURL(acc2);
+        System.assertEquals('www.mydefaultsite.com', result2.Website, 'Default website should be set for empty website');
         
-        // Assert
-        System.assertEquals(expectedTotal, totalRevenue, 
-            'Total revenue should match sum of accounts with revenue');
+        // Test with existing website
+        Account acc3 = new Account(Name = 'Test3', Website = 'www.existing.com');
+        Account result3 = AccountOperations.setDefaultURL(acc3);
+        System.assertEquals('www.existing.com', result3.Website, 'Existing website should not be changed');
     }
     
-    /**
-     * @description Tests updateAccounts method with successful updates
-     */
-    @isTest
-    static void testUpdateAccountsSuccess() {
-        // Arrange
-        List<Account> testAccounts = createTestAccounts();
-        insert testAccounts;
+    @IsTest
+    static void testSetDefaultValues() {
+        // Test with null list
+        List<Account> nullList = null;
+        List<Account> nullResult = AccountOperations.setDefaultValues(nullList);
+        System.assertEquals(0, nullResult.size(), 'Should return empty list for null input');
         
-        for(Account acc : testAccounts) {
-            acc.Description = 'Updated Description';
-        }
+        // Test with empty list
+        List<Account> emptyList = new List<Account>();
+        List<Account> emptyResult = AccountOperations.setDefaultValues(emptyList);
+        System.assertEquals(0, emptyResult.size(), 'Should return empty list for empty input');
         
-        // Act
-        Test.startTest();
-        Database.SaveResult[] results = AccountOperations.updateAccounts(testAccounts);
-        Test.stopTest();
+        // Test with actual accounts
+        List<Account> testAccounts = new List<Account>{
+            new Account(Name = 'Test1'),
+            new Account(Name = 'Test2', Description = 'Custom Description', Phone = '9999999999', Website = 'www.custom.com'),
+            new Account(Name = 'Test3', Description = '', Phone = '', Website = '')
+        };
         
-        // Assert
-        System.assertNotEquals(null, results, 'Should return save results');
-        for(Database.SaveResult sr : results) {
-            System.assert(sr.isSuccess(), 'Update should be successful');
-        }
-    }
-    
-    /**
-     * @description Tests updateAccounts method with batch size limit
-     */
-    @isTest
-    static void testUpdateAccountsBatchLimit() {
-        // Arrange
-        List<Account> largeAccountList = new List<Account>();
-        for(Integer i = 0; i < 10001; i++) {
-            largeAccountList.add(new Account(Name = 'Test Account ' + i));
-        }
+        List<Account> results = AccountOperations.setDefaultValues(testAccounts);
         
-        // Act & Assert
-        Test.startTest();
-        try {
-            AccountOperations.updateAccounts(largeAccountList);
-            System.assert(false, 'Should throw exception for exceeding batch size');
-        } catch(AccountOperations.AccountOperationsException e) {
-            System.assert(e.getMessage().contains('Batch size exceeds maximum limit'), 
-                'Should throw batch size limit exception');
-        }
-        Test.stopTest();
-    }
-    
-    /**
-     * @description Tests updateAccounts method with null input
-     */
-    @isTest
-    static void testUpdateAccountsNull() {
-        // Act
-        Test.startTest();
-        Database.SaveResult[] results = AccountOperations.updateAccounts(null);
-        Test.stopTest();
+        System.assertEquals(3, results.size(), 'Should return same number of accounts');
         
-        // Assert
-        System.assertEquals(null, results, 'Null input should return null');
-    }
-    
-    /**
-     * @description Tests updateAccounts method with DML error
-     */
-    @isTest
-    static void testUpdateAccountsError() {
-        // Arrange
-        Account invalidAccount = new Account(); // No Name field, will cause DML error
-        List<Account> invalidAccounts = new List<Account>{invalidAccount};
+        // Verify first account (all defaults)
+        System.assertEquals('Default description', results[0].Description, 'Default description should be set');
+        System.assertEquals('1234567890', results[0].Phone, 'Default phone should be set');
+        System.assertEquals('www.mydefaultsite.com', results[0].Website, 'Default website should be set');
         
-        // Act
-        Test.startTest();
-        Database.SaveResult[] results = AccountOperations.updateAccounts(invalidAccounts);
-        Test.stopTest();
+        // Verify second account (custom values preserved)
+        System.assertEquals('Custom Description', results[1].Description, 'Custom description should be preserved');
+        System.assertEquals('9999999999', results[1].Phone, 'Custom phone should be preserved');
+        System.assertEquals('www.custom.com', results[1].Website, 'Custom website should be preserved');
         
-        // Assert
-        System.assertNotEquals(null, results, 'Should return save results');
-        for(Database.SaveResult sr : results) {
-            System.assert(!sr.isSuccess(), 'Update should fail');
-            System.assert(!sr.getErrors().isEmpty(), 'Should have error messages');
-        }
+        // Verify third account (empty values replaced with defaults)
+        System.assertEquals('Default description', results[2].Description, 'Default description should be set for empty');
+        System.assertEquals('1234567890', results[2].Phone, 'Default phone should be set for empty');
+        System.assertEquals('www.mydefaultsite.com', results[2].Website, 'Default website should be set for empty');
     }
 }
